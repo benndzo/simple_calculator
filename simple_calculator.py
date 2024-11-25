@@ -1,58 +1,63 @@
 import tkinter as tk
 
-def button_click(number):
-    """Append the clicked number or operator to the entry widget."""
-    current = entry.get()
-    entry.delete(0, tk.END)
-    entry.insert(0, current + str(number))
+class SimpleCalculator:
+    def __init__(self):
+        self.screen = tk.Tk()
+        self.screen.geometry("400x500")
+        self.screen.title("Simple Calculator")
+        self.create_widgets()
 
-def clear():
-    """Clear the entry widget."""
-    entry.delete(0, tk.END)
+    def create_widgets(self):
+        self.result = tk.StringVar()
 
-def erase():
-    """Delete the last character from the entry widget."""
-    current = entry.get()
-    entry.delete(0, tk.END)
-    entry.insert(0, current[:-1])
+        # Entry to display the result
+        self.result_display = tk.Entry(self.screen, textvariable=self.result, font=("Arial", 20), bd=10, relief="sunken", justify="right")
+        self.result_display.grid(row=0, column=0, columnspan=4, pady=10)  # Add some padding at the top
 
-def calculate():
-    """Evaluate the expression in the entry widget."""
-    try:
-        result = eval(entry.get())
-        entry.delete(0, tk.END)
-        entry.insert(0, str(result))
-    except Exception:
-        entry.delete(0, tk.END)
-        entry.insert(0, "Error")
+        # Button layout
+        button_texts = [
+            ('7', 1, 0), ('8', 1, 1), ('9', 1, 2), ('/', 1, 3),
+            ('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('*', 2, 3),
+            ('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('-', 3, 3),
+            ('C', 4, 0), ('0', 4, 1), ('=', 4, 2), ('+', 4, 3),
+        ]
 
-# Create the main window
-root = tk.Tk()
-root.title("Simple Calculator")
+        # Create number and operation buttons with colors
+        for (text, row, col) in button_texts:
+            self.create_button(text, row, col)
 
-# Entry widget to display the expression
-entry = tk.Entry(root, font=("Arial", 24), borderwidth=5, justify="right")
-entry.grid(row=0, column=0, columnspan=4, sticky="nsew", padx=5, pady=5)
+    def create_button(self, text, row, col):
+        if text == "C":
+            button = tk.Button(self.screen, text=text, font=("Arial", 15), command=lambda: self.on_button_click(text), width=4, bg="red", fg="white")
+        elif text == "=":
+            button = tk.Button(self.screen, text=text, font=("Arial", 15), command=lambda: self.on_button_click(text), width=4, bg="blue", fg="white")
+        elif text in ['+', '-', '*', '/']:
+            button = tk.Button(self.screen, text=text, font=("Arial", 15), command=lambda: self.on_button_click(text), width=4, bg="gray", fg="white")
+        else:
+            button = tk.Button(self.screen, text=text, font=("Arial", 15), command=lambda: self.on_button_click(text), width=4)
 
-# Button layout
-buttons = [
-    ("C", 1, 0, "lightcoral", clear), ("⌫", 1, 1, "lightblue", erase), ("/", 1, 2, "lightgray", lambda: button_click("/")), ("*", 1, 3, "lightgray", lambda: button_click("*")),
-    ("7", 2, 0, "white", lambda: button_click("7")), ("8", 2, 1, "white", lambda: button_click("8")), ("9", 2, 2, "white", lambda: button_click("9")), ("-", 2, 3, "lightgray", lambda: button_click("-")),
-    ("4", 3, 0, "white", lambda: button_click("4")), ("5", 3, 1, "white", lambda: button_click("5")), ("6", 3, 2, "white", lambda: button_click("6")), ("+", 3, 3, "lightgray", lambda: button_click("+")),
-    ("1", 4, 0, "white", lambda: button_click("1")), ("2", 4, 1, "white", lambda: button_click("2")), ("3", 4, 2, "white", lambda: button_click("3")), ("=", 4, 3, "lightgreen", calculate),
-    ("0", 5, 0, "white", lambda: button_click("0")), (".", 5, 1, "white", lambda: button_click(".")),
-]
+        button.grid(row=row, column=col, padx=5, pady=5)
 
-# Create and place buttons
-for (text, row, col, color, command) in buttons:
-    button = tk.Button(root, text=text, font=("Arial", 18), bg=color, command=command)
-    button.grid(row=row, column=col, sticky="nsew", padx=2, pady=2)
+    def on_button_click(self, button_text):
+        current_text = self.result.get()
 
-# Adjust grid weights for even scaling
-for i in range(6):  # 6 rows (including the entry row)
-    root.grid_rowconfigure(i, weight=1)
-for j in range(4):  # 4 columns
-    root.grid_columnconfigure(j, weight=1)
+        if button_text == "=":
+            try:
+                result = str(eval(current_text))
+                self.result.set(result)
+            except Exception as e:
+                self.result.set("Error")
+        elif button_text == "C":
+            self.clear()
+        else:
+            self.result.set(current_text + button_text)
 
-# Run the application
-root.mainloop()
+    def clear(self):
+        self.result.set("")
+
+    def run(self):
+        self.screen.mainloop()
+
+# Run the calculator app
+app = SimpleCalculator()
+app.run()
