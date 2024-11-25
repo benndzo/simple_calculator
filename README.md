@@ -18,10 +18,7 @@ A basic calculator app built with Python's Tkinter library. It supports simple a
 1. Download the code to your computer.
 2. Open a terminal or command prompt.
 3. Navigate to the folder containing the `calculator.py` file.
-4. Run the app by typing:
-   ```bash
-   python calculator.py
-   ```
+4. Run the app 
 
 ## Buttons
 - **C**: Clear the current input.
